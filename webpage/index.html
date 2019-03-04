@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://getbootstrap.com/docs/4.1/examples/grid/grid.css">
+    <link rel="stylesheet" href="https://getbootstrap.com/docs/4.1/examples/sticky-footer-navbar/sticky-footer-navbar.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="style/style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" async defer></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous" async defer></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous" async defer></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" async defer></script>
+    <script src="https://d3dy5gmtp8yhk7.cloudfront.net/2.1/pusher.min.js" async defer></script>
+
+    <title>
+        CryptoCowboy
+    </title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <header id="header"></header>
+        <hr>
+        <div id="app"></div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            Donate: rBCA75NX9SGo3sawJQaQNX1ujEY9xZsYBj
+        </div>
+    </footer>
+
+
+
+    <script type="module" async defer>
+        import App from './javascript/main.js'; // or './module'  
+
+        window.addEventListener("load", function (event)
+        {
+            var socket = io();
+
+            var app = new App(socket);
+            app.initialize();
+            app.start();
+        });
+        /*
+                function addClickHandler(id, callback)
+                {
+                    var element = $("#" + id);
+
+                    $('#' + id).css({ 'cursor': 'pointer' });
+
+                    element.on('click', function ()
+                    {
+                        callback(id);
+                    });
+                }
+
+                <script>
+  var script = document.createElement("script");
+  script.addEventListener("load", function(event) {
+    console.log("Script finished loading and executing");
+  });
+  script.src = "http://example.com/example.js";
+  script.async = true;
+  document.getElementsByTagName("script")[0].parentNode.appendChild(script);
+    /script>
+    */
+
+    </script>
+</body>
+
+</html>

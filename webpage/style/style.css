@@ -1,0 +1,27 @@
+
+hr {
+	/*
+	border: 0;
+	height: 1px;
+	background: #333;
+	padding: 0;
+	
+	margin: 20px;*/
+	/*
+	background-image: -webkit-linear-gradient(left, #ccc, #333, #ccc);
+	background-image: -moz-linear-gradient(left, #ccc, #333, #ccc);
+	background-image: -ms-linear-gradient(left, #ccc, #333, #ccc);
+	background-image: -o-linear-gradient(left, #ccc, #333, #ccc);
+	*/
+	}
+
+
+
+
+/*
+[class*="col-"] {
+	background-clip: padding-box;
+	border: 5px solid rgb(107, 98, 107);
+	border-radius: 25px;
+}
+*/

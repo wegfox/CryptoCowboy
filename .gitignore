@@ -1,0 +1,30 @@
+#	Remove a file from the repository without deleting the actual file:	'git rm --cached'
+#	**	Directory Wildcard
+#	*	Matches zero or more characters
+#	?	Matched exactly 1 character
+#	A string with no appending slash matches both files and directories
+#	Append a slash to indicate a directory
+#	!	Negates any previous rule (With the exception of directory rules)
+
+node_modules
+.eslintrc.json
+.vscode/launch.json
+*.json
+CryptoCowboy.code-workspace
+database/cryptocowboy.db
+*.db
+*.log
+.vscode/
+.vscode
+config/secret.txt
+config/address.txt
+compile.txt
+*.csv
+logs
+logs/*
+old
+Notes.txt
+FLUSH
+webpage/indexOG.html
+webpage/scratch-pad
+webpage/files/XRPLBotExample.pdf
