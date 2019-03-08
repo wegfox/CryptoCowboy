@@ -6,6 +6,7 @@
 #	Append a slash to indicate a directory
 #	!	Negates any previous rule (With the exception of directory rules)
 
+
 node_modules
 .eslintrc.json
 .vscode/launch.json
@@ -20,8 +21,6 @@ config/secret.txt
 config/address.txt
 compile.txt
 *.csv
-logs
-logs/*
 old
 Notes.txt
 FLUSH
