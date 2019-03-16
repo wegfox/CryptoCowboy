@@ -1,6 +1,8 @@
 'use strict';
 
 import Card from '../../components/basic/card.js'; // or './module'
+
+import ComboBox from '../../components/elements/ComboBox.js';
 //import { isBuffer } from 'util';
 
 export default class ExchangeCard
@@ -9,6 +11,7 @@ export default class ExchangeCard
 	{
 		this.socket = socket;
 		this.wallet = wallet;
+
 		this.exchangeCard =
 			{
 				id: "exchangeCard-" + wallet.address,
@@ -22,87 +25,151 @@ export default class ExchangeCard
 
 		this.element = (this.card).element;
 
-		this.baseCurrency = document.createElement("select");
-		this.pairCurrency = document.createElement("select");
+		this.baseCurrency = new ComboBox("currencyCode");
+		this.pairCurrency = new ComboBox("currencyCode");
+
+		this.baseCurrency.element.onchange = () => 
+		{
+			this.baseCurrencyChange();
+		};
+
+		this.pairCurrency.element.onchange = () => 
+		{
+			this.pairCurrencyChange();
+		};
 
 		this.orderBook = document.createElement("div");
-		this.ask = document.createElement("div");
-		this.bid = document.createElement("div");
-		this.orderBook.append(this.ask);
-		this.orderBook.append(this.bid);
 		this.card.appendBody(this.orderBook);
+
+		this.spread = document.createElement("div");
+		this.spread.style.flexFlow = "row wrap";
+
+		this.header = document.createElement("span");
+		//header.style.flexFlow = "column";
+		this.header.style.display = "flex";
+		this.header.style.flexDirection = "row";
+
+		this.ask = document.createElement("h6");
+		this.bid = document.createElement("h6");
+		this.ask.style.flex = 1;
+		this.bid.style.flex = 1;
+
+		this.header.append(this.bid);
+		this.header.append(this.ask);
+
+		this.spread.append(this.header);
+
+		this.orderBook.append(this.spread);
+
 		this.ask.innerHTML = "ask";
 		this.bid.innerHTML = "bid";
 	}
 
+	populateBasePair()
+	{
+		this.baseCurrency.setOptions(this.assets);
+		this.pairCurrency.setOptions(this.assets);
+	}
+
+	baseCurrencyChange()
+	{
+		let currencyPair = {};
+		currencyPair.baseCurrency = this.baseCurrency.Value;
+		currencyPair.pairCurrency = this.pairCurrency.Value;
+
+		this.socket.emit('orderBook', currencyPair);
+	}
+
+	pairCurrencyChange()
+	{
+		let currencyPair = {};
+		currencyPair.baseCurrency = this.baseCurrency.Value;
+		currencyPair.pairCurrency = this.pairCurrency.Value;
+
+		this.socket.emit('orderBook', currencyPair);
+	}
 
 	displayExchange(assets)
 	{
-		let baseCurrency = this.baseCurrency;
-		let pairCurrency = this.pairCurrency;
+		this.assets = assets;
 
-		baseCurrency.innerHTML = "";
-		assets.forEach(function (asset)
-		{
-			if (asset.currencyCode != null)
-			{
-				let option = document.createElement("option");
-				option.value = asset.currencyCode;
-				option.innerHTML = asset.currencyCode;
-				baseCurrency.append(option);
-			}
-		});
+		this.populateBasePair();
 
-		pairCurrency.innerHTML = "";
-		assets.forEach(function (asset)
-		{
-			if (asset.currencyCode != null)
-			{
-				let option = document.createElement("option");
-				option.value = asset.currencyCode;
-				option.innerHTML = asset.currencyCode;
-				pairCurrency.append(option);
-			}
+		let currencyPair = {};
+		currencyPair.baseCurrency = this.baseCurrency.Value;
+		currencyPair.pairCurrency = this.pairCurrency.Value;
 
-		});
+		this.socket.emit('orderBook', currencyPair);
 
-		this.card.appendBody("Buy ");
+		this.card.appendBody("Purchase ");
 
-		let buyCount = document.createElement("input");
-		buyCount.type = "number";
-		buyCount.name = "buyCount";
-		buyCount.min = 0;
-		buyCount.max = 5;
-		buyCount.step = 0.05;
-		buyCount.value = 0.00;
-		this.card.appendBody(buyCount);
+		this.buyCount = document.createElement("input");
+		this.buyCount.type = "number";
+		this.buyCount.name = "buyCount";
+		this.buyCount.min = 0;
+		this.buyCount.max = 5;
+		this.buyCount.step = 0.05;
+		this.buyCount.value = 1.00;
+		this.card.appendBody(this.buyCount);
+		this.card.appendBody(this.pairCurrency.element);
 
-		this.card.appendBody(baseCurrency);
 		this.card.appendBody(" for ");
 
-		let sellCount = document.createElement("input");
-		sellCount.type = "number";
-		sellCount.name = "sellCount";
-		sellCount.min = 0;
-		sellCount.max = 5;
-		sellCount.step = 0.05;
-		sellCount.value = 0.00;
-		this.card.appendBody(sellCount);
+		this.sellCount = document.createElement("input");
+		this.sellCount.type = "number";
+		this.sellCount.name = "sellCount";
+		this.sellCount.min = 0;
+		this.sellCount.max = 5;
+		this.sellCount.step = 0.05;
+		this.sellCount.value = 0.00;
+		this.card.appendBody(this.sellCount);
+		this.card.appendBody(this.baseCurrency.element);
 
+		/*
+				this.buyCount.onchange = () => 
+				{
+					this.sellCount.value = this.buyCount.value * this.askValue;
+				};
+		
+				this.sellCount.onchange = () => 
+				{
+					this.buyCount.value = this.sellCount.value / this.askValue;
+				};
+				*/
 
-		this.card.appendBody(pairCurrency);
 		this.card.appendBody(document.createElement("br"));
 	}
 
-	set Ask(ask)
+	set Ask(askObject)
 	{
-		this.ask.innerHTML = ask;
+		let ask = askObject.basePerPair;
+		this.askValue = ask;
+		ask = 1.00 / ask;
+		ask = parseFloat(ask.toFixed(4));
+		this.ask.innerHTML = "Ask<br>" + ask;
+
+		//this.sellCount.value = this.buyCount.value * ask;
 	}
 
 	set Bid(bidObject)
 	{
-		let bid = JSON.stringify(bidObject);
-		this.bid.innerHTML = bid;
+		let bid = bidObject.basePerPair;
+		this.bidValue = bid;
+		//bid = 1.00 / bid;
+		bid = parseFloat(bid.toFixed(4));
+		this.bid.innerHTML = "Bid<br>" + bid;
+	}
+
+	set OrderBook(orderBook)
+	{
+		if (orderBook.spread == "ask")
+		{
+			this.Ask = orderBook;
+		}
+		else if (orderBook.spread == "bid")
+		{
+			this.Bid = orderBook;
+		}
 	}
 
 	set Assets(assets)

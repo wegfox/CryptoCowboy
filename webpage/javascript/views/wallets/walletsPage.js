@@ -38,15 +38,6 @@ export class WalletsPage
 		this.element.append(this.table);
 	}
 
-	show()
-	{
-		this.element.style.display = "block";
-	}
-	hide()
-	{
-		this.element.style.display = "none";
-	}
-
 	async onWalletSelected(wallet)
 	{
 		if (wallet.address == null)
@@ -90,9 +81,7 @@ export class WalletsPage
 
 	set OrderBook(orderBook)
 	{
-		this.exchangeCard.Bid = orderBook;
-
-
+		this.exchangeCard.OrderBook = orderBook;
 	}
 
 	set Wallets(wallets)
@@ -155,6 +144,7 @@ export class WalletsPage
 			this.assetsCard.displayAssets(assets);
 
 			this.exchangeCard.displayExchange(assets);
+
 			this.manageWalletCard.displayWalletOptions();
 		}
 	}

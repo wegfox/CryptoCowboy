@@ -88,11 +88,6 @@ function socketConnection()
 
 	io.on('connection', function (socket) 
 	{
-		transport.on('logged', (data) =>
-		{
-			socket.emit('log', data);
-		});
-
 		if (reset) { io.emit('reset', " "); reset = false; }
 
 		log.debug('A user connected');
@@ -156,6 +151,23 @@ function socketConnection()
 			});
 		});
 
+		socket.on('orderBook', async function (pair)
+		{
+			log.debug("orderBook");
+
+			try
+			{
+				log.debug(JSON.stringify(pair));
+				await ripple.getOrderBook(pair.baseCurrency, pair.pairCurrency, "ask");
+				await ripple.getOrderBook(pair.pairCurrency, pair.baseCurrency, "bid");
+			}
+			catch (error)
+			{
+				log.error("Error reading order books");
+				log.error(error);
+			}
+		});
+
 		socket.on('deleteWallet', function (address)
 		{
 			log.verbose("Deleting wallet: " + address);
@@ -169,6 +181,11 @@ function socketConnection()
 			});
 		});
 
+	});
+
+	transport.on('logged', (data) =>
+	{
+		io.emit('log', data);
 	});
 }
 

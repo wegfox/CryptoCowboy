@@ -185,35 +185,46 @@ exports.subscribeToOrderBook = async (currencyObject) =>
 
 };
 
-exports.getOrderBook = async (currencyBuy, currencySell) =>
+exports.getOrderBook = async (currencyBuy, currencySell, spread) =>
 {
+	let buyXRP = false;
+	let sellXRP = false;
 
-	if (currencySell == null)
-	{
-		currencySell = { currency: "XRP" };
-	}
+	log.debug(`Getting order book for ${currencyBuy.currencyCode} and ${currencySell.currencyCode}`);
 
-	if (currencyBuy.currency == currencySell.currency)
+	if (currencyBuy.currencyCode == currencySell.currencyCode)
 	{
+		log.warn(`Duplicate asset ${currencyBuy.currencyCode}`);
 		return;
 	}
 
-	log.verbose('Reading order books for ' + currencyBuy.currency + " and " + currencySell.currency);
-
 	let formattedCurrencyBuy = {};
-	formattedCurrencyBuy.currency = currencyBuy.currency;
-	if (currencyBuy.currency != "XRP")
+	formattedCurrencyBuy.currency = currencyBuy.currencyCode;
+	if (formattedCurrencyBuy.currency != "XRP")
 	{
 		formattedCurrencyBuy.issuer = currencyBuy.counterparty;
+	}
+	else
+	{
+		log.debug("buyXRP");
+		buyXRP = true;
 	}
 
 
 	let formattedCurrencySell = {};
-	formattedCurrencySell.currency = currencySell.currency;
-	if (currencySell.currency != "XRP")
+	formattedCurrencySell.currency = currencySell.currencyCode;
+	if (formattedCurrencySell.currency != "XRP")
 	{
 		formattedCurrencySell.issuer = currencySell.counterparty;
 	}
+	else
+	{
+		log.debug("sellXRP");
+		sellXRP = true;
+	}
+
+	log.verbose(JSON.stringify(formattedCurrencyBuy));
+	log.verbose(JSON.stringify(formattedCurrencySell));
 
 	let result = null;
 	try
@@ -224,16 +235,17 @@ exports.getOrderBook = async (currencyBuy, currencySell) =>
 				"taker_gets": formattedCurrencySell,
 				"limit": 1
 			});
+
 	}
 	catch (error) 
 	{
-		log.debug(error.stack);
+		log.error(error.stack);
 	}
+	log.debug(result);
+	log.debug(JSON.stringify(result.offers[0].TakerGets));
+	log.debug(JSON.stringify(result.offers[0].TakerPays));
 
 	let offers = result.offers;
-
-	//log.debug(JSON.stringify(offers, null, 2));
-
 	if (offers.length == 0)
 	{
 		log.warn("No order book data available.");
@@ -243,23 +255,42 @@ exports.getOrderBook = async (currencyBuy, currencySell) =>
 	for (let i = 0; i < offers.length; i++)
 	{
 		let offer = offers[i];
-		//if (result.engine_result != "tesSUCCESS")
-		//{
-		//	return;
-		//}
-		//log.debug(JSON.stringify(offers[i], null, 2));
 
-		//
-		//if (offer.TransactionType == "OfferCreate")
-		//{
 		let OfferCreate = {};
-		OfferCreate.baseValue = offer.TakerGets / 1000000;
-		OfferCreate.pair = offer.TakerPays.currency;
-		OfferCreate.pairValue = offer.TakerPays.value;
-		OfferCreate.basePerPair = OfferCreate.baseValue / OfferCreate.pairValue;
+
+		//TODO: if not xrp, check properties
+		if (buyXRP)
+		{
+			OfferCreate.base = offer.TakerGets.currency;
+			OfferCreate.baseValue = offer.TakerGets.value;
+
+			OfferCreate.pairValue = offer.TakerPays / 1000000;
+
+			OfferCreate.basePerPair = OfferCreate.baseValue / OfferCreate.pairValue;
+		}
+		else if (sellXRP)
+		{
+			OfferCreate.baseValue = offer.TakerGets / 1000000;
+
+			OfferCreate.pair = offer.TakerPays.currency;
+			OfferCreate.pairValue = offer.TakerPays.value;
+
+			OfferCreate.basePerPair = OfferCreate.baseValue / OfferCreate.pairValue;
+		}
+		else
+		{
+			OfferCreate.base = offer.TakerGets.currency;
+			OfferCreate.baseValue = offer.TakerGets.value;
+
+			OfferCreate.pair = offer.TakerPays.currency;
+			OfferCreate.pairValue = offer.TakerPays.value;
+
+			OfferCreate.basePerPair = OfferCreate.baseValue / OfferCreate.pairValue;
+		}
 
 		log.debug("Offer: " + JSON.stringify(OfferCreate, null, 2));
 
+		OfferCreate.spread = spread;
 		io.emit('orderBook', OfferCreate);
 		// Do something useful with `event`//
 		//log.debug(JSON.stringify(offer, null, 2));
@@ -292,6 +323,7 @@ exports.getAssets = (address) =>
 			asset.counterparty = balances[i].counterparty;
 
 			//await exports.subscribeToOrderBook(balances[i]);
+			/*
 			try
 			{
 				await exports.getOrderBook(balances[i]);
@@ -301,7 +333,7 @@ exports.getAssets = (address) =>
 				log.error("Error reading order books");
 				log.error(error);
 			}
-
+*/
 
 			assets.push(asset);
 		}
