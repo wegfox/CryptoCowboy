@@ -347,6 +347,54 @@ exports.getAssets = (address) =>
 };
 
 
+exports.exchange = (buy, sell) =>
+{
+	let buyCurrency = buy.currency;
+	let buyCounterparty = buy.counterparty;
+	let buyValue = buy.value;
+
+	let sellCurrency = sell.currency;
+	let sellCounterparty = sell.counterparty;
+	let sellValue = sell.value;
+
+	let buyPrice = sellValue / buyValue;
+
+	//orderPriceBuy = buyPrice;
+
+	//let shares = Number((tradingModule.range / buyPrice).toFixed(6));	//	Shares to trade
+
+	//let cost = Number((shares * buyPrice).toFixed(6));	//	Cost for transaction
+
+	//buyCost = cost;
+
+	//XRP has 6 significant digits past the decimal point. In other words, XRP cannot be divided into positive values smaller than 0.000001 (1e-6). XRP has a maximum value of 100000000000 (1e11).
+
+	//Non-XRP values have 16 decimal digits of precision, with a maximum value of 9999999999999999e80. The smallest positive non-XRP value is 1e-81
+
+	let buyPriceClean = buyPrice.toFixed(4);	//	For text output only
+	let costClean = cost.toFixed(4);	//	For text output only
+
+	logging.log(" ");
+	logging.log("Placing an order to buy " + shares.toFixed(4) + " XRP at $" + buyPriceClean + " for $" + costClean);
+
+	console.log('Creating a new order');
+
+	let buyOrder = createBuyOrder(shares, cost);
+	api.prepareOrder(address, buyOrder, myInstructions).then(prepared => 
+	{
+		console.log('Order Prepared');
+		return api.getLedger().then(ledger => 
+		{
+			console.log('Current Ledger', ledger.ledgerVersion);
+			return submitTransaction(ledger.ledgerVersion, prepared, exports.secret);
+		});
+	}).then(() => 
+	{
+
+
+	}).catch(console.error);
+};
+
 /*
 function connect(table)
 {
@@ -539,61 +587,6 @@ function connect(table)
 // 	});
 // }
 
-
-// function buy()
-// {
-// 	let buyPoint = tradingModule.fixedPoint - tradingModule.range;	//	Point at which we buy
-// 	let buyPrice = (buyPoint / tradingModule.XRP);	//	Price of shares when we buy
-
-// 	orderPriceBuy = buyPrice;
-
-// 	let shares = Number((tradingModule.range / buyPrice).toFixed(6));	//	Shares to trade
-
-// 	let cost = Number((shares * buyPrice).toFixed(6));	//	Cost for transaction
-
-// 	buyCost = cost;
-
-// 	if ((cost + 1.00) >= cash)
-// 	{
-// 		logging.log("We don't have enough USD to trade.");
-
-// 		api.disconnect().then(() => 
-// 		{
-// 			logging.log('API disconnected.');
-// 			connection = "Not connected";
-// 			webPageModule.emit('connectionStatus', connection);
-// 		}).catch(console.error);
-
-// 		setTimeout(shutDown, 100);
-// 	}
-
-// 	//XRP has 6 significant digits past the decimal point. In other words, XRP cannot be divided into positive values smaller than 0.000001 (1e-6). XRP has a maximum value of 100000000000 (1e11).
-
-// 	//Non-XRP values have 16 decimal digits of precision, with a maximum value of 9999999999999999e80. The smallest positive non-XRP value is 1e-81
-
-// 	let buyPriceClean = buyPrice.toFixed(4);	//	For text output only
-// 	let costClean = cost.toFixed(4);	//	For text output only
-
-// 	logging.log(" ");
-// 	logging.log("Placing an order to buy " + shares.toFixed(4) + " XRP at $" + buyPriceClean + " for $" + costClean);
-
-// 	console.log('Creating a new order');
-
-// 	let buyOrder = createBuyOrder(shares, cost);
-// 	api.prepareOrder(address, buyOrder, myInstructions).then(prepared => 
-// 	{
-// 		console.log('Order Prepared');
-// 		return api.getLedger().then(ledger => 
-// 		{
-// 			console.log('Current Ledger', ledger.ledgerVersion);
-// 			return submitTransaction(ledger.ledgerVersion, prepared, exports.secret);
-// 		});
-// 	}).then(() => 
-// 	{
-
-
-// 	}).catch(console.error);
-// }
 
 // function sell()
 // {

@@ -29,117 +29,20 @@ export default class ExchangeCard
 		this.orderBook.style.flexFlow = "row wrap";
 
 		//	Create currency selection row
-		this.selectCurrency = document.createElement("div");
-		this.selectCurrency.style.display = "flex";
-		this.selectCurrency.style.flexDirection = "row";
+		this.selectCurrency = this.generateCurrencySelection();
 		this.orderBook.append(this.selectCurrency);
-
-		this.baseCurrency = new ComboBox("currencyCode");
-		this.baseCurrency.element.onchange = () => 
-		{
-			this.baseCurrencyChange();
-		};
-		this.baseCurrency.element.style.flex = 1;
-		this.selectCurrency.append(this.baseCurrency.element);
-
-		this.pairCurrency = new ComboBox("currencyCode");
-		this.pairCurrency.element.onchange = () => 
-		{
-			this.purchaseText2.innerHTML = this.pairCurrency.Value.currencyCode + " for ";
-			this.pairCurrencyChange();
-		};
-
-		this.pairCurrency.element.style.flex = 1;
-		this.selectCurrency.append(this.pairCurrency.element);
 
 		this.orderBook.append(document.createElement("hr"));
 
 		//	Create spread row
-		this.spread = document.createElement("div");
-		this.spread.style.display = "flex";
-		this.spread.style.flexDirection = "row";
+		this.spread = this.generateBidAsk();
 		this.orderBook.append(this.spread);
 
-		this.bid = document.createElement("h6");
-		this.bid.style.flex = 1;
-		this.spread.append(this.bid);
-
-		this.ask = document.createElement("h6");
-		this.ask.style.flex = 1;
-		this.spread.append(this.ask);
-
 		this.orderBook.append(document.createElement("br"));
-
 
 		//	Create purchase row
-		this.purchase = document.createElement("div");
-		this.purchase.style.display = "flex";
-		this.purchase.style.flexDirection = "row";
+		this.purchase = this.generateExchange();
 		this.orderBook.append(this.purchase);
-
-		let purchaseText = document.createElement("div");
-		purchaseText.innerHTML = "Purchase ";
-		purchaseText.style.flex = 1;
-		this.purchase.append(purchaseText);
-
-		this.buyCount = document.createElement("input");
-		this.buyCount.style.flex = 1;
-		this.buyCount.type = "number";
-		this.buyCount.name = "buyCount";
-		this.buyCount.min = 0;
-		this.buyCount.max = 5;
-		this.buyCount.step = 0.05;
-		this.buyCount.value = 1.00;
-		this.purchase.append(this.buyCount);
-
-		this.purchaseText2 = document.createElement("div");
-		this.purchaseText2.innerHTML = this.pairCurrency.Text + " for ";
-		this.purchaseText2.style.flex = 1;
-		this.purchase.append(this.purchaseText2);
-
-		this.orderBook.append(document.createElement("br"));
-
-
-
-		this.sellCount = document.createElement("input");
-		this.sellCount.type = "number";
-		this.sellCount.name = "sellCount";
-		this.sellCount.min = 0;
-		this.sellCount.max = 5;
-		this.sellCount.step = 0.05;
-		this.sellCount.value = 0.00;
-		this.purchase.append(this.sellCount);
-
-
-
-
-
-		/*
-		
-		
-				this.header = document.createElement("span");
-				//header.style.flexFlow = "column";
-				this.header.style.display = "flex";
-				this.header.style.flexDirection = "row";
-				this.header.append(this.selectCurrency);
-				this.spread.append(this.header);
-		
-				//this.selectCurrency.appendBody(this.baseCurrency.element);
-		
-
-				this.buy =
-					{
-						id: "buyCard",
-						title: "Purchase",
-						subTitle: "",
-						body: "",
-						onClick: null
-					};
-		
-				this.buyCard = new Card(this.buy);
-				this.header.append(this.buyCard.element);
-
-				*/
 	}
 
 	generateCurrencySelection()
@@ -151,6 +54,7 @@ export default class ExchangeCard
 		this.baseCurrency = new ComboBox("currencyCode");
 		this.baseCurrency.element.onchange = () => 
 		{
+			this.purchaseText3.innerHTML = " " + this.baseCurrency.Value.currencyCode;
 			this.baseCurrencyChange();
 		};
 		this.baseCurrency.element.style.flex = 1;
@@ -167,6 +71,75 @@ export default class ExchangeCard
 		this.selectCurrency.append(this.pairCurrency.element);
 
 		return this.selectCurrency;
+	}
+
+	generateExchange()
+	{
+		//	Create purchase row
+		let purchase = document.createElement("div");
+		purchase.style.display = "flex";
+		purchase.style.flexDirection = "row";
+
+		let purchaseText = document.createElement("div");
+		purchaseText.innerHTML = "Purchase ";
+		purchaseText.style.flex = 1;
+		purchase.append(purchaseText);
+
+		this.buyCount = document.createElement("input");
+		this.buyCount.style.flex = 1;
+		this.buyCount.type = "number";
+		this.buyCount.name = "buyCount";
+		this.buyCount.min = 0;
+		this.buyCount.max = 5;
+		this.buyCount.step = 0.05;
+		this.buyCount.value = 1.00;
+		purchase.append(this.buyCount);
+
+		this.purchaseText2 = document.createElement("div");
+		this.purchaseText2.innerHTML = this.pairCurrency.Text + " for ";
+		this.purchaseText2.style.flex = 1;
+		purchase.append(this.purchaseText2);
+
+		this.orderBook.append(document.createElement("br"));
+
+		this.sellCount = document.createElement("input");
+		this.sellCount.type = "number";
+		this.sellCount.name = "sellCount";
+		this.sellCount.min = 0;
+		this.sellCount.max = 5;
+		this.sellCount.step = 0.05;
+		this.sellCount.value = 0.00;
+		purchase.append(this.sellCount);
+
+		this.purchaseText3 = document.createElement("div");
+		this.purchaseText3.innerHTML = " " + this.baseCurrency.Text;
+		this.purchaseText3.style.flex = 1;
+		purchase.append(this.purchaseText3);
+
+		this.button = document.createElement("button");
+		this.button.innerHTML = " " + "Submit";
+		this.button.style.flex = 1;
+		purchase.append(this.button);
+
+		return purchase;
+	}
+
+	generateBidAsk()
+	{
+		//	Create spread row
+		let spread = document.createElement("div");
+		spread.style.display = "flex";
+		spread.style.flexDirection = "row";
+
+		this.bid = document.createElement("h6");
+		this.bid.style.flex = 1;
+		spread.append(this.bid);
+
+		this.ask = document.createElement("h6");
+		this.ask.style.flex = 1;
+		spread.append(this.ask);
+
+		return spread;
 	}
 
 	populateBasePair()
@@ -204,20 +177,6 @@ export default class ExchangeCard
 		currencyPair.pairCurrency = this.pairCurrency.Value;
 
 		this.socket.emit('orderBook', currencyPair);
-
-
-
-		/*
-				this.buyCount.onchange = () => 
-				{
-					this.sellCount.value = this.buyCount.value * this.askValue;
-				};
-		
-				this.sellCount.onchange = () => 
-				{
-					this.buyCount.value = this.sellCount.value / this.askValue;
-				};
-				*/
 
 		this.card.appendBody(document.createElement("br"));
 	}
