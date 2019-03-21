@@ -1,4 +1,5 @@
 'use strict';
+// @ts-check
 
 import NavigationBar from './views/components/navigationBar.js';
 import { log } from './library/logs.js';

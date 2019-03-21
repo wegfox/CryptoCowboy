@@ -7,6 +7,7 @@ export default class ComboBox
 		this.element = document.createElement("select");
 		this.label = label;
 		this.options = [];
+		this.text = this.Text;
 	}
 	setOptions(options)
 	{
@@ -50,6 +51,22 @@ export default class ComboBox
 	get Value()
 	{
 		return this.options[this.element.selectedIndex];
+	}
 
+	get Text()
+	{
+		return this.value;
+	}
+
+	set Text(text)
+	{
+		for (var i = 0; i < this.options.length; i++)
+		{
+			if (this.options[i][this.label] == text)
+			{
+				this.value = text;
+				this.element.selectedIndex = i;
+			}
+		}
 	}
 }
