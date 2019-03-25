@@ -24,11 +24,11 @@ export default class NavigationBar
 		logo.className = "btn btn-dark";
 		dashboard.append(logo);
 
-		var title = document.createElement("div");
-		title.id = "title";
-		title.className = "navbar-brand btn btn-dark";
-		title.innerHTML = "CryptoCowboy";
-		dashboard.append(title);
+		this.title = document.createElement("div");
+		this.title.id = "title";
+		this.title.className = "navbar-brand btn btn-dark";
+		this.title.innerHTML = "CryptoCowboy";
+		dashboard.append(this.title);
 
 		var button = document.createElement("button");
 		button.className = "navbar-toggler";
@@ -53,6 +53,10 @@ export default class NavigationBar
 		this.element = element;
 	}
 
+	set Version(version)
+	{
+		this.title.innerHTML = "CryptoCowboy " + version;
+	}
 	generateNavigationButtons(...buttons)
 	{
 		var navigationButtons = document.createElement("ul");

@@ -7,16 +7,18 @@ export default class ComboBox
 		this.element = document.createElement("select");
 		this.label = label;
 		this.options = [];
-		this.text = this.Text;
+		this.bindElements = [];
+		this.onUpdate = [];
+
+		this.element.onchange = () => 
+		{
+			this.update();
+		};
 	}
 	setOptions(options)
 	{
 		this.options = options;
 		this.createList();
-		//for (var i = 0; i < this.options.length; i++)
-		//{
-		//	this.values.push(item);
-		//}
 	}
 	createList()
 	{
@@ -40,6 +42,32 @@ export default class ComboBox
 		{
 			this.index = this.element.selectedIndex;
 			this.value = this.options[this.index][this.label];
+		}
+
+		this.update();
+		//alert(this.value);
+	}
+
+	BindElement(element, propery)
+	{
+		this.bindElements.push({ "element": element, "property": propery });
+	}
+
+	OnUpdate(action)
+	{
+		this.onUpdate.push(action);
+	}
+
+	update()
+	{
+		for (let i = 0; i < this.bindElements.length; i++)
+		{
+			this.bindElements[i].element[this.bindElements[i].property] = this.element.value;
+		}
+
+		for (let i = 0; i < this.onUpdate.length; i++)
+		{
+			this.onUpdate[i]();
 		}
 	}
 

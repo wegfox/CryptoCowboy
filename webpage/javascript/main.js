@@ -32,8 +32,8 @@ export default class App
 		this.router = new Router(this);
 		this.router.route();
 
-		var navigationBar = new NavigationBar(this.router);
-		document.getElementById("header").append(navigationBar.element);
+		this.navigationBar = new NavigationBar(this.router);
+		document.getElementById("header").append(this.navigationBar.element);
 
 		this.socket.emit("getWallets", "");
 		//socket.emit("getSettings", "");
@@ -54,6 +54,11 @@ export default class App
 		socket.on('log', (logs) =>
 		{
 			log(logs);
+		});
+
+		socket.on('version', (version) =>
+		{
+			this.navigationBar.Version = version;
 		});
 
 		socket.on('wallets', (wallets) =>

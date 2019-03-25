@@ -88,6 +88,7 @@ function socketConnection()
 
 	io.on('connection', function (socket) 
 	{
+		io.emit('version', Settings.version);
 		if (reset) { io.emit('reset', " "); reset = false; }
 
 		log.debug('A user connected');
