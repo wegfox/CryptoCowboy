@@ -79,7 +79,7 @@ export default class ExchangeCard
 		amount.style.flexDirection = "row";
 		parent.append(amount);
 
-		this.appendText(amount, "Amount: ");
+		this.appendText(amount, "Purchase: ");
 
 		this.buyCount = document.createElement("input");
 		this.buyCount.style.flex = 1;
