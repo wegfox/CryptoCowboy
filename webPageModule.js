@@ -152,7 +152,7 @@ function socketConnection()
 			});
 		});
 
-		socket.on('orderBook', async function (pair)
+		socket.on('getOrderBook', async function (pair)
 		{
 			log.debug("orderBook");
 
@@ -165,6 +165,24 @@ function socketConnection()
 			catch (error)
 			{
 				log.error("Error reading order books");
+				log.error(error);
+			}
+		});
+
+		socket.on('submitOrder', async function (orderData)
+		{
+			log.debug("submitOrder");
+
+			try
+			{
+				log.debug(JSON.stringify(orderData));
+				await ripple.exchange(orderData);
+				//await ripple.getOrderBook(pair.baseCurrency, pair.pairCurrency, "ask");
+				//await ripple.getOrderBook(pair.pairCurrency, pair.baseCurrency, "bid");
+			}
+			catch (error)
+			{
+				log.error("Error submitting order");
 				log.error(error);
 			}
 		});

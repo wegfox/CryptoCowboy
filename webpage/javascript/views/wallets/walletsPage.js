@@ -143,7 +143,7 @@ export class WalletsPage
 		{
 			this.assetsCard.displayAssets(assets);
 
-			this.exchangeCard.displayExchange(assets);
+			this.exchangeCard.Assets = assets;
 
 			this.manageWalletCard.displayWalletOptions();
 		}

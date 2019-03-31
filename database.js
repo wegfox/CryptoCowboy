@@ -24,10 +24,10 @@ function execute(task)
 		});
 
 		let result = null;
-		database.serialize(() =>
+		database.serialize(async () =>
 		{
 			log.debug("Executing database task.");
-			result = task();
+			result = await task();
 			log.debug(`DB => execute() task results: ${result}`);
 		});
 
@@ -205,20 +205,39 @@ function deleteItem(table, column, value, callback)
 	});
 }
 
-/*	connect(() =>
+exports.getWalletSecret = async (address) =>
+{
+	return execute(async () =>
 	{
-		database.serialize(() =>
+		let secret = await walletSecret(address);
+		return secret;
+	});
+};
+
+function walletSecret(address)
+{
+	return new Promise((resolve, reject) =>
+	{
+		log.verbose("Searching for wallet secret key");
+		let sql = `SELECT secret FROM wallets WHERE wallets.address = "${address}"`;
+		database.all(sql, [], (err, rows) =>
 		{
-			addWallet(address, secret, nickname, () =>
+			if (err)
 			{
-				disconnect(() =>
-				{
-					callback();
-				});
+				reject(err);
+				throw err;
+			}
+			//console.log(rows);
+			let secret = "";
+			rows.forEach((row) =>
+			{
+				//console.log(row.secret);
+				secret = row.secret;
 			});
+			resolve(secret);
 		});
 	});
-	*/
+}
 
 /*
 Promise.all([exports.ProConnect(), exports.ProConnect2()]).then(() =>

@@ -5,13 +5,20 @@ export default class ComboBox
 	constructor(label)
 	{
 		this.element = document.createElement("select");
+
 		this.label = label;
+
 		this.options = [];
+
 		this.bindElements = [];
 		this.onUpdate = [];
 
 		this.element.onchange = () => 
 		{
+			//console.log(this.Value, this.oldIndex, this.nextIndex, this.Index);
+			this.oldIndex = this.nextIndex;
+			this.nextIndex = this.Index;
+			//console.log(this.Value, this.oldIndex, this.nextIndex, this.Index);
 			this.update();
 		};
 	}
@@ -20,6 +27,7 @@ export default class ComboBox
 		this.options = options;
 		this.createList();
 	}
+
 	createList()
 	{
 		this.index = this.element.selectedIndex;
@@ -38,24 +46,16 @@ export default class ComboBox
 		{
 			this.value = this.options[this.index][this.label];
 		}
-		else if (this.options.length > 0)
+		if (this.options.length > 0)
 		{
 			this.index = this.element.selectedIndex;
 			this.value = this.options[this.index][this.label];
 		}
+		this.nextIndex = this.Index;
+		this.oldIndex = this.Index;
 
 		this.update();
 		//alert(this.value);
-	}
-
-	BindElement(element, propery)
-	{
-		this.bindElements.push({ "element": element, "property": propery });
-	}
-
-	OnUpdate(action)
-	{
-		this.onUpdate.push(action);
 	}
 
 	update()
@@ -71,9 +71,39 @@ export default class ComboBox
 		}
 	}
 
+	BindElement(element, propery)
+	{
+		this.bindElements.push({ "element": element, "property": propery });
+	}
+
+	OnUpdate(action)
+	{
+		this.onUpdate.push(action);
+	}
+
+
+
+	Next()
+	{
+		if (this.options.length > 1)
+		{
+			this.nextIndex = this.element.selectedIndex;
+			this.oldIndex = this.element.selectedIndex;
+			this.element.selectedIndex = (this.element.selectedIndex + 1);
+			this.element.onchange();
+		}
+	}
+
 	get Index()
 	{
 		return this.element.selectedIndex;
+	}
+
+	set Index(index)
+	{
+		this.nextIndex = index;
+		this.oldIndex = this.element.selectedIndex;
+		this.element.selectedIndex = index;
 	}
 
 	get Value()

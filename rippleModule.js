@@ -1,5 +1,6 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
-
+var assert = require('assert');
+var database = require('./database');
 var io = require('./webPageModule').io;
 
 var log = require('./loggingModule').logger();
@@ -347,15 +348,17 @@ exports.getAssets = (address) =>
 };
 
 
-exports.exchange = (buy, sell) =>
+exports.exchange = async (orderData) =>
 {
-	let buyCurrency = buy.currency;
-	let buyCounterparty = buy.counterparty;
-	let buyValue = buy.value;
+	log.debug("exports.exchange");
+	let address = orderData.wallet.address;
+	let buyCurrency = orderData.buy.currency;
+	let buyCounterparty = orderData.buy.counterparty;
+	let buyValue = orderData.buy.value;
 
-	let sellCurrency = sell.currency;
-	let sellCounterparty = sell.counterparty;
-	let sellValue = sell.value;
+	let sellCurrency = orderData.sell.currency;
+	let sellCounterparty = orderData.sell.counterparty;
+	let sellValue = orderData.sell.value;
 
 	let buyPrice = sellValue / buyValue;
 
@@ -371,29 +374,113 @@ exports.exchange = (buy, sell) =>
 
 	//Non-XRP values have 16 decimal digits of precision, with a maximum value of 9999999999999999e80. The smallest positive non-XRP value is 1e-81
 
-	let buyPriceClean = buyPrice.toFixed(4);	//	For text output only
-	let costClean = cost.toFixed(4);	//	For text output only
+	//let buyPriceClean = buyPrice.toFixed(4);	//	For text output only
+	//let costClean = cost.toFixed(4);	//	For text output only
 
-	logging.log(" ");
-	logging.log("Placing an order to buy " + shares.toFixed(4) + " XRP at $" + buyPriceClean + " for $" + costClean);
+
+	log.debug(" ");
+	log.debug("Placing an order to buy " + buyValue + " " + buyCurrency + " for " + sellValue + " for " + sellCurrency);
 
 	console.log('Creating a new order');
 
-	let buyOrder = createBuyOrder(shares, cost);
-	api.prepareOrder(address, buyOrder, myInstructions).then(prepared => 
+	// function createBuyOrder(shares, cost)
+	// {
+	// 	let stringShare = shares.toFixed(6);
+	// 	let stringCost = cost.toFixed(6);
+	// 	log(stringShare);
+	// 	log(stringCost);
+
+
+	let quantity =
+	{
+		"currency": buyCurrency,
+		"value": buyValue
+	};
+
+	if (quantity.currency != "XRP")
+	{
+		quantity.counterparty = buyCounterparty;
+	}
+
+	let totalPrice =
+	{
+		"currency": sellCurrency,
+		"value": sellValue
+	};
+
+	if (totalPrice.currency != "XRP")
+	{
+		totalPrice.counterparty = sellCounterparty;
+	}
+
+
+	let buyOrder =
+	{
+		"direction": "buy",
+
+		"quantity": quantity,
+
+		"totalPrice": totalPrice,
+
+		"passive": true,
+
+		"fillOrKill": false
+	};
+
+	let secret = await database.getWalletSecret(address);
+
+	await api.prepareOrder(address, buyOrder, myInstructions).then(prepared => 
 	{
 		console.log('Order Prepared');
 		return api.getLedger().then(ledger => 
 		{
 			console.log('Current Ledger', ledger.ledgerVersion);
-			return submitTransaction(ledger.ledgerVersion, prepared, exports.secret);
+			return submitTransaction(ledger.ledgerVersion, prepared, secret);
 		});
 	}).then(() => 
 	{
+		log.debug("Success!");
 
-
-	}).catch(console.error);
+	}).catch((error) => { log.error("Error"); });
 };
+
+
+
+
+// function createBuyOrder(shares, cost)
+// {
+// 	let stringShare = shares.toFixed(6);
+// 	let stringCost = cost.toFixed(6);
+// 	log(stringShare);
+// 	log(stringCost);
+// 	let buyOrder =
+// 	{
+// 		"direction": "buy",
+
+// 		"quantity":
+// 		{
+// 			"currency": "XRP",
+// 			"value": stringShare
+// 		},
+
+// 		"totalPrice":
+// 		{
+// 			"currency": currencySymbol,
+// 			"counterparty": currencyCode,
+// 			"value": stringCost
+// 		},
+
+// 		"passive": true,
+
+// 		"fillOrKill": false
+// 	};
+
+// 	return buyOrder;
+// }
+
+
+
+
 
 /*
 function connect(table)
@@ -683,52 +770,51 @@ function connect(table)
 // 	return sellOrder;
 // }
 
-// function verifyTransaction(hash, options) 
-// {
-// 	console.log('Verifing Transaction');
-// 	return api.getTransaction(hash, options).then(data => 
-// 	{
-// 		console.log('Final Result: ', data.outcome.result);
-// 		console.log('Validated in Ledger: ', data.outcome.ledgerVersion);
-// 		console.log('Sequence: ', data.sequence);
-// 		return data.outcome.result === 'tesSUCCESS';
-// 	}).catch(error => 
-// 	{
-// 		/* If transaction not in latest validated ledger,
-// 		   try again until max ledger hit */
-// 		if (error instanceof api.errors.PendingLedgerVersionError) 
-// 		{
-// 			return new Promise((resolve, reject) => 
-// 			{
-// 				setTimeout(() => verifyTransaction(hash, options)
-// 					.then(resolve, reject), INTERVAL);
-// 			});
-// 		}
-// 		return error;
-// 	});
-// }
+function verifyTransaction(hash, options) 
+{
+	console.log('Verifing Transaction');
+	return api.getTransaction(hash, options).then(data => 
+	{
+		console.log('Final Result: ', data.outcome.result);
+		console.log('Validated in Ledger: ', data.outcome.ledgerVersion);
+		console.log('Sequence: ', data.sequence);
+		return data.outcome.result === 'tesSUCCESS';
+	}).catch(error => 
+	{
+		/* If transaction not in latest validated ledger,
+		   try again until max ledger hit */
+		if (error instanceof api.errors.PendingLedgerVersionError) 
+		{
+			return new Promise((resolve, reject) => 
+			{
+				setTimeout(() => verifyTransaction(hash, options).then(resolve, reject), interval);
+			});
+		}
+		return error;
+	});
+}
 
 // /* Function to prepare, sign, and submit a transaction to the XRP Ledger. */
-// function submitTransaction(lastClosedLedgerVersion, prepared, secret) 
-// {
-// 	const signedData = api.sign(prepared.txJSON, secret);
-// 	return api.submit(signedData.signedTransaction).then(data => 
-// 	{
-// 		console.log('Tentative Result: ', data.resultCode);
-// 		console.log('Tentative Message: ', data.resultMessage);
-// 		/* If transaction was not successfully submitted throw error */
-// 		assert.strictEqual(data.resultCode, 'tesSUCCESS');
-// 		/* 'tesSUCCESS' means the transaction is being considered for the next ledger, and requires validation. */
+function submitTransaction(lastClosedLedgerVersion, prepared, secret) 
+{
+	const signedData = api.sign(prepared.txJSON, secret);
+	return api.submit(signedData.signedTransaction).then(data => 
+	{
+		console.log('Tentative Result: ', data.resultCode);
+		console.log('Tentative Message: ', data.resultMessage);
+		/* If transaction was not successfully submitted throw error */
+		assert.strictEqual(data.resultCode, 'tesSUCCESS');
+		/* 'tesSUCCESS' means the transaction is being considered for the next ledger, and requires validation. */
 
-// 		/* If successfully submitted, begin validation workflow */
-// 		const options =
-// 		{
-// 			minLedgerVersion: lastClosedLedgerVersion,
-// 			maxLedgerVersion: prepared.instructions.maxLedgerVersion
-// 		};
-// 		return new Promise((resolve, reject) => 
-// 		{
-// 			setTimeout(() => verifyTransaction(signedData.id, options).then(resolve, reject), INTERVAL);
-// 		});
-// 	});
-// }
+		/* If successfully submitted, begin validation workflow */
+		const options =
+		{
+			minLedgerVersion: lastClosedLedgerVersion,
+			maxLedgerVersion: prepared.instructions.maxLedgerVersion
+		};
+		return new Promise((resolve, reject) => 
+		{
+			setTimeout(() => verifyTransaction(signedData.id, options).then(resolve, reject), interval);
+		});
+	});
+}

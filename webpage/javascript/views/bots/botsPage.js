@@ -20,37 +20,29 @@ export class BotsPage
 		this.element.id = "BotsPage";
 		this.element.style.display = "none";
 
-		let build = { title: "Build", width: 3 };
-		let tweak = { title: "Tweak", width: 3 };
+		let bots = { title: "Bots", width: 3 };
+		let build = { title: "Build", width: 6 };
+		//let tweak = { title: "Tweak", width: 3 };
 		let play = { title: "Play", width: 3 };
-		let collection = { title: "Collection", width: 3 };
 
-		this.table = table(build, tweak, play, collection);
+		this.table = table(bots, build, play);
 
-		this.wallets = this.table.querySelector("#Build");
-		this.manage = this.table.querySelector("#Tweak");
-		this.newWallet = this.table.querySelector("#Play");
-		this.newWallet = this.table.querySelector("#Collection");
+		this.build = this.table.querySelector("#Build");
+		//this.manage = this.table.querySelector("#Tweak");
+		this.play = this.table.querySelector("#Play");
+		this.bots = this.table.querySelector("#Bots");
 
-		this.events.subscribe('walletSelected', (wallet) => 
+		this.events.subscribe('botSelected', (bot) => 
 		{
-			this.onWalletSelected(wallet);
+			this.onBotSelected(bot);
 		});
 
 		this.element.append(this.table);
 	}
 
-	show()
+	async onBotSelected(bot)
 	{
-		this.element.style.display = "block";
-	}
-	hide()
-	{
-		this.element.style.display = "none";
-	}
-
-	async onWalletSelected(wallet)
-	{
+		/*
 		if (wallet.address == null)
 		{
 			this.manage.innerHTML = '';
@@ -87,20 +79,11 @@ export class BotsPage
 
 			await this.socket.emit("getAssets", wallet);
 		}
-
+*/
 	}
 
-	set OrderBook(orderBook)
+	set Bots(bots)
 	{
-		this.exchangeCard.Bid = orderBook;
-
-
-	}
-
-	set Wallets(wallets)
-	{
-		//this.exchangeCard.Wallets = wallets;
-
 		this.manage.innerHTML = '';
 		this.selectedWalletTitle = this.element.querySelector("#Manage-Header");
 		this.selectedWalletTitle.innerHTML = "";

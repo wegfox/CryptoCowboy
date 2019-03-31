@@ -87,7 +87,7 @@ export default class ExchangeCard
 		this.buyCount.name = "buyCount";
 		this.buyCount.min = 0;
 		//this.buyCount.max = 5;
-		this.buyCount.step = 0.05;
+		this.buyCount.step = 0.01;
 		this.buyCount.value = 1.00;
 		this.buyCount.style.flex = 1;
 		amount.append(this.buyCount);
@@ -110,7 +110,7 @@ export default class ExchangeCard
 		this.price.name = "sellCount";
 		this.price.min = 0;
 		//this.price.max = 5;
-		this.price.step = 0.05;
+		this.price.step = 0.01;
 		this.price.value = 0.00;
 		this.price.style.flex = 1;
 		price.append(this.price);
@@ -174,6 +174,32 @@ export default class ExchangeCard
 		this.button.style.flex = 1;
 		parent.append(this.button);
 
+		this.button.onclick = () => 
+		{
+			let sell =
+			{
+				currency: this.baseCurrency.Value.currencyCode,
+				counterparty: this.baseCurrency.Value.counterparty,
+				value: this.sellCount.value
+			};
+
+			let buy =
+			{
+				counterparty: this.pairCurrency.Value.counterparty,
+				currency: this.pairCurrency.Value.currencyCode,
+				value: this.buyCount.value
+			};
+
+			let orderData =
+			{
+				wallet: this.wallet,
+				buy: buy,
+				sell: sell
+			};
+
+			this.socket.emit("submitOrder", orderData);
+		};
+
 		this.price.oninput = () => 
 		{
 			this.sellCount.value = (this.buyCount.value * this.price.value).toFixed(4);
@@ -217,41 +243,51 @@ export default class ExchangeCard
 
 	baseCurrencyChange()
 	{
+		this.ask.innerHTML = "";
+		this.bid.innerHTML = "";
+
+		if (this.baseCurrency.Value == this.pairCurrency.Value)
+		{
+			this.pairCurrency.Index = this.baseCurrency.oldIndex;
+		}
+
 		let currencyPair = {};
 		currencyPair.baseCurrency = this.baseCurrency.Value;
 		currencyPair.pairCurrency = this.pairCurrency.Value;
 
-		this.socket.emit('orderBook', currencyPair);
+		this.price.value = 0.00;
+
+		this.socket.emit('getOrderBook', currencyPair);
 	}
 
 	pairCurrencyChange()
 	{
-		let currencyPair = {};
-		currencyPair.baseCurrency = this.baseCurrency.Value;
-		currencyPair.pairCurrency = this.pairCurrency.Value;
+		this.ask.innerHTML = "";
+		this.bid.innerHTML = "";
 
-		this.socket.emit('orderBook', currencyPair);
-	}
-
-	displayExchange(assets)
-	{
-		this.assets = assets;
-
-		this.populateBasePair();
+		if (this.baseCurrency.Value == this.pairCurrency.Value)
+		{
+			this.baseCurrency.Index = this.pairCurrency.oldIndex;
+		}
 
 		let currencyPair = {};
 		currencyPair.baseCurrency = this.baseCurrency.Value;
 		currencyPair.pairCurrency = this.pairCurrency.Value;
 
-		this.socket.emit('orderBook', currencyPair);
+		this.price.value = 0.00;
 
-		this.card.appendBody(document.createElement("br"));
+		this.socket.emit('getOrderBook', currencyPair);
 	}
 
 	populateBasePair()
 	{
 		this.baseCurrency.setOptions(this.assets);
 		this.pairCurrency.setOptions(this.assets);
+
+		if (this.baseCurrency.Value == this.pairCurrency.Value)
+		{
+			this.baseCurrency.Next();
+		}
 	}
 
 	set Ask(askObject)
@@ -293,10 +329,19 @@ export default class ExchangeCard
 
 	set Assets(assets)
 	{
-		//alert(JSON.stringify(assets));
-		//this.displayExchange(a);
+		this.assets = assets;
+
+		this.populateBasePair();
+
+		let currencyPair = {};
+		currencyPair.baseCurrency = this.baseCurrency.Value;
+		currencyPair.pairCurrency = this.pairCurrency.Value;
 
 
+
+		this.socket.emit('getOrderBook', currencyPair);
+
+		this.card.appendBody(document.createElement("br"));
 	}
 
 	set Wallets(wallets)

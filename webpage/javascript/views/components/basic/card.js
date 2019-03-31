@@ -1,6 +1,6 @@
 'use strict';
 
-import Element from '../element.js'; // or './module'
+//import Element from '../element.js'; // or './module'
 export default class Card
 {
 	constructor(cardData)
