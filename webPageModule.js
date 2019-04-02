@@ -76,6 +76,11 @@ function listenOnPort(port)
 		res.sendFile(__dirname + "/webpage/index.html");
 	});
 
+	app.post('/Update', function (req, res)
+	{
+		log.debug("Update");
+	});
+
 	app.use(express.static('webpage'));
 }
 

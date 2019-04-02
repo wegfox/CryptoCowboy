@@ -8,6 +8,9 @@
 //	Require Modules
 //	*********************************************************
 
+const fs = require('fs');
+const readline = require('readline');
+
 const commandLineArgs = require('command-line-args');
 
 var packageJSON = require('./package.json');
@@ -105,6 +108,58 @@ process.once('SIGUSR2', function ()
 	log.debug("Goodbye!");
 	process.kill(process.pid, 'SIGUSR2');
 });
+
+
+//************************ 
+
+async function processLineByLine() 
+{
+	const fileStream = fs.createReadStream('README.md');
+
+	const rl = readline.createInterface({
+		input: fileStream,
+		crlfDelay: Infinity
+	});
+	// Note: we use the crlfDelay option to recognize all instances of CR LF
+	// ('\r\n') in input.txt as a single line break.
+
+	let firstlineR = true;
+	let firstline = "";
+	let newFile = "";
+
+	for await (const line of rl)
+	{
+		if (firstlineR)
+		{
+			//firstline = line;
+			firstlineR = false;
+			//newFile = line + "\r\n";
+
+			newFile = "# CryptoCowboy v" + Settings.version + "\r\n";
+		}
+		else if (line != "")
+		{
+			newFile += line + "\r\n";
+		}
+		// Each line in input.txt will be successively available here as `line`.
+		console.log(`Line from file: ${line}`);
+	}
+
+	fs.writeFile('README.md', newFile, function (err)
+	{
+		if (err) throw err;
+		console.log('Replaced!');
+	});
+	console.log(newFile);
+}
+
+processLineByLine();
+
+
+//************************ 
+
+
+
 
 //	*********************************************************
 //	Initialize Default parameters
