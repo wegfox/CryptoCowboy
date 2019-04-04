@@ -67,7 +67,19 @@ exports.createTables = () =>
 		database.run("CREATE TABLE IF NOT EXISTS Account(username, password, settings)")
 			.run("CREATE TABLE IF NOT EXISTS Settings(version, portNumber, readLogLines)")
 			.run("CREATE TABLE IF NOT EXISTS Wallets(address, secret, nickname)")
-			.run("CREATE TABLE IF NOT EXISTS Bots(walletAddress, baseCurrency, watchedCurrency, id)");
+			.run("CREATE TABLE IF NOT EXISTS Bots(id, wallet, baseCurrency, pairCurrency, fixedPoint, funding, maxFunding, range, rangeMin, rangeMax, growthRate, decayRate)");
+	});
+};
+
+
+exports.dropTable = (table) =>
+{
+	log.debug("Drop Tables");
+	return execute(() => 
+	{
+		log.debug("Dropping database table if it exists.");
+
+		database.run("DROP TABLE " + table);
 	});
 };
 
@@ -107,6 +119,20 @@ exports.loadWallets = () =>
 };
 
 
+
+exports.loadBots = () =>
+{
+	return execute(async () =>
+	{
+		log.debug("DB: Loading all bots from database");
+
+		let bots = await readEntireTable("Bots");
+
+		return bots;
+	});
+};
+
+
 exports.addWallet = (address, secret, nickname, callback) =>
 {
 	return execute(async () =>
@@ -115,6 +141,29 @@ exports.addWallet = (address, secret, nickname, callback) =>
 
 		var query = "INSERT INTO wallets (address, secret, nickname) VALUES (?, ?, ?)";
 		var parameters = [address, secret, nickname];
+
+		database.run(query, parameters, function (err)
+		{
+			if (err)
+			{
+				return console.log(err.message);
+			}
+			// get the last insert id
+			log.verbose(`A row has been inserted with rowid ${this.lastID}`);
+			callback();
+		});
+	});
+};
+
+
+exports.addBot = (bot, callback) =>
+{
+	return execute(async () =>
+	{
+		log.verbose(`Adding bot: "${bot.id}" to wallets table.`);
+
+		var query = "INSERT INTO Bots(id, wallet, baseCurrency, pairCurrency, fixedPoint, funding, maxFunding, range, rangeMin, rangeMax, growthRate, decayRate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		var parameters = [bot.id, bot.wallet, bot.baseCurrency, bot.pairCurrency, bot.fixedPoint, bot.funding, bot.maxFunding, bot.rangeMin, bot.rangeMax, bot.range, bot.growthRate, bot.decayRate];
 
 		database.run(query, parameters, function (err)
 		{

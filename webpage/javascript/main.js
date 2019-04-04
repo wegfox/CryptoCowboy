@@ -43,7 +43,9 @@ export default class App
 	{
 		let socket = this.socket;
 		let views = this.views;
+
 		let Wallets = this.Wallets;
+		let Bots = this.Bots;
 
 		//	This is mostly for development
 		socket.on('reset', () =>
@@ -67,6 +69,14 @@ export default class App
 
 			views.Dashboard.Wallets = wallets;
 			views.Wallets.Wallets = wallets;
+			views.Bots.Wallets = wallets;
+		});
+
+		socket.on('bots', (bots) =>
+		{
+			Bots = bots;
+
+			views.Bots.Bots = bots;
 		});
 
 		socket.on('assets', (assets) =>
@@ -77,6 +87,7 @@ export default class App
 			}
 			views.Dashboard.Assets = assets;
 			views.Wallets.Assets = assets;
+			views.Bots.Assets = assets;
 		});
 
 		socket.on('orderBook', (orderBook) =>

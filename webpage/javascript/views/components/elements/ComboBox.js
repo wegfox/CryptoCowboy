@@ -34,13 +34,29 @@ export default class ComboBox
 
 		this.element.innerHTML = "";
 
-		for (var i = 0; i < this.options.length; i++)
+		if(typeof(this.options) == 'object')
 		{
-			let item = document.createElement("option");
-			item.value = this.options[i][this.label];
-			item.innerHTML = this.options[i][this.label];
-			this.element.append(item);
+			for (var property1 in this.options) 
+			{
+				let item = document.createElement("option");
+				item.value = this.options[property1][this.label];
+				item.innerHTML = this.options[property1][this.label];
+				this.element.append(item);
+
+			  }
 		}
+		else if (typeof(this.options) == 'array')
+		{
+			for (var i = 0; i < this.options.length; i++)
+			{
+				
+				let item = document.createElement("option");
+				item.value = this.options[i][this.label];
+				item.innerHTML = this.options[i][this.label];
+				this.element.append(item);
+			}
+		}
+
 
 		if (this.index != -1 && this.options[this.index][this.label] != "")
 		{

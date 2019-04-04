@@ -157,7 +157,8 @@ processLineByLine();
 
 
 //************************ 
-
+//WARNING: Developer mode only
+//await database.dropTable("Bots");
 
 
 
@@ -228,7 +229,12 @@ async function initialize()
 
 	log.debug("Initiating connection to Ripple API");
 	await ripple.connect();
-	await ripple.subscribeToAccounts(Wallets);
+
+	if(Settings.wallets != null)
+	{
+		await ripple.subscribeToAccounts(Wallets);
+	}
+
 
 	await webPage.startWebServer(Settings.port, Accounts, Settings, Wallets, Bots, database);
 }

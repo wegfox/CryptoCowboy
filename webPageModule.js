@@ -122,6 +122,20 @@ function socketConnection()
 			socket.emit('wallets', Wallets);
 		});
 
+		socket.on('getBots', function () 
+		{
+			log.debug("Socket: 'getBots'");
+
+			log.debug(Bots);
+
+			//let wallets = {};
+			//for (var key in Wallets) 
+			//{
+			//	wallets[key] = Wallets[key];
+			//}
+			socket.emit('bots', Bots);
+		});
+
 		socket.on('getAssets', function (wallet)
 		{
 			log.debug("Socket: 'getAssets'");
@@ -155,6 +169,18 @@ function socketConnection()
 				let wallets = await database.loadWallets();
 				Object.assign(Wallets, wallets);
 				socket.emit('wallets', Wallets);
+			});
+		});
+
+		socket.on('addBot', function (bot)
+		{
+			log.debug("Socket: 'addBot'");
+
+			database.addBot(bot, async () =>
+			{
+				let bots = await database.loadBots();
+				Object.assign(Bots, bots);
+				socket.emit('bots', Bots);
 			});
 		});
 

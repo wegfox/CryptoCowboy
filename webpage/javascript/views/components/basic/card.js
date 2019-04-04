@@ -63,6 +63,11 @@ export default class Card
 		this.body.append(body);
 	}
 
+	append(body)
+	{
+		this.body.append(body);
+	}
+
 	show()
 	{
 		this.element.style.display = "block";

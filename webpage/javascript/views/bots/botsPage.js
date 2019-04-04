@@ -4,7 +4,7 @@ import Events from '../../library/events.js';
 import Card from '../components/basic/card.js'; // or './module'
 import { table } from '../components/basic/table.js'; // or './module'
 import WalletCard from './components/walletCard.js'; // or './module'
-import NewWalletCard from './components/newManageWalletCard.js'; // or './module'
+import NewBotCard from './components/newBotCard.js'; // or './module'
 import AssetsCard from './components/assetsCard.js'; // or './module'
 import ExchangeCard from './components/exchangeCard.js'; // or './module'
 import ManageWalletCard from './components/manageWalletCard.js'; // or './module'
@@ -27,10 +27,11 @@ export class BotsPage
 
 		this.table = table(bots, build, play);
 
+		this.bots = this.table.querySelector("#Bots");
 		this.build = this.table.querySelector("#Build");
 		//this.manage = this.table.querySelector("#Tweak");
 		this.play = this.table.querySelector("#Play");
-		this.bots = this.table.querySelector("#Bots");
+		
 
 		this.events.subscribe('botSelected', (bot) => 
 		{
@@ -38,29 +39,49 @@ export class BotsPage
 		});
 
 		this.element.append(this.table);
+
+		let newBotCardData =
+			{
+				id: "newBotCard",
+				title: "Add New Bot",
+				subTitle: " ",
+				body: "",
+				events: this.events,
+				onClick: (card) => 
+				{
+					card.events.publish('botSelected', null);
+					card.select();
+				}
+			};
+
+			let newBotCard = new Card(newBotCardData);
+
+			newBotCard.events.subscribe('botSelected', () => 
+			{
+				newBotCard.deselect();
+			});
+
+			this.bots.append(newBotCard.element);
+
+			this.bots.append(newBotCard.element);
+
+		this.socket.emit("getBots", "");
 	}
+
 
 	async onBotSelected(bot)
 	{
-		/*
-		if (wallet.address == null)
+		
+		if (bot.id == null)
 		{
-			this.manage.innerHTML = '';
-			let newWalletCard = new NewWalletCard();
-			this.manage.append(newWalletCard.element);
-			this.selectedWalletTitle = this.element.querySelector("#Manage-Header");
+			this.build.innerHTML = '';
+			let newBotCard = new NewBotCard(this.socket);
+			this.build.append(newBotCard.element);
+			//this.selectedWalletTitle = this.element.querySelector("#Manage-Header");
 
-			this.newWalletButton = this.manage.querySelector("#addWalletButton");
-			this.newWalletButton.onclick = () => 
-			{
-				let walletData = {};
-				walletData.nickname = this.manage.querySelector("#nickname").value;
-				walletData.address = this.manage.querySelector("#address").value;
-				walletData.secret = this.manage.querySelector("#secret").value;
-
-				this.socket.emit('addWallet', walletData);
-			};
+			this.newBotCard = newBotCard;
 		}
+		/*
 		else
 		{
 			this.manage.innerHTML = '';
@@ -84,63 +105,40 @@ export class BotsPage
 
 	set Bots(bots)
 	{
-		this.manage.innerHTML = '';
-		this.selectedWalletTitle = this.element.querySelector("#Manage-Header");
-		this.selectedWalletTitle.innerHTML = "";
-
-		if (wallets != null)
+		if(bots == null)
 		{
-			let walletsPage = this;
-			let events = this.events;
-
-			walletsPage.wallets.innerHTML = "";
-
-			for (var key in wallets) 
-			{
-				let wallet = wallets[key];
-				let walletCard = new WalletCard(events, wallet);
-
-				walletCard.events.subscribe('walletSelected', () => 
-				{
-					walletCard.card.deselect();
-				});
-
-				walletsPage.wallets.append(walletCard.element);
-			}
-
-			let newWalletCardData =
-			{
-				id: "newWalletCard",
-				title: "Add New Wallet",
-				subTitle: " ",
-				body: "",
-				events: events,
-				onClick: (card) => 
-				{
-					card.events.publish('walletSelected', null);
-					card.select();
-				}
-			};
-
-			let newWalletCard = new Card(newWalletCardData);
-
-			newWalletCard.events.subscribe('walletSelected', () => 
-			{
-				newWalletCard.deselect();
-			});
-
-			walletsPage.wallets.append(newWalletCard.element);
+			console.log("No bots found");
 		}
+
+
+
+	}
+
+	set Wallets(wallets)
+	{
+		if(this.newBotCard != null)
+		{
+			this.newBotCard.Wallets = wallets;
+		}
+
 	}
 
 	set Assets(assets)
 	{
+		if(this.newBotCard != null)
+		{
+			this.newBotCard.Assets = assets;
+		}
+
+
 		if (this.assetsCard != null)
 		{
 			this.assetsCard.displayAssets(assets);
 
 			this.exchangeCard.displayExchange(assets);
 			this.manageWalletCard.displayWalletOptions();
+
+
 		}
 	}
 }
