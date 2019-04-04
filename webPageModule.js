@@ -78,6 +78,7 @@ function listenOnPort(port)
 
 	app.post('/Update', function (req, res)
 	{
+		//	Check for secret
 		log.debug("Update");
 	});
 
