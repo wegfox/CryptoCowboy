@@ -125,9 +125,10 @@ function socketConnection()
 		socket.on('getBots', function () 
 		{
 			log.debug("Socket: 'getBots'");
-
+			let bots = database.loadBots();
 			log.debug(Bots);
 
+			Object.assign(Bots, bots);
 			//let wallets = {};
 			//for (var key in Wallets) 
 			//{
@@ -230,6 +231,14 @@ function socketConnection()
 				log.debug("Sending new wallet list back to client");
 				socket.emit('wallets', Wallets);
 			});
+		});
+
+		socket.on('command', function (command)
+		{
+			if(command.task == "clear table")
+			{
+				database.clearTable(command.target);
+			}
 		});
 
 	});

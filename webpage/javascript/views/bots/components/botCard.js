@@ -2,28 +2,28 @@
 
 import Card from '../../components/basic/card.js'; // or './module'
 
-export default class WalletCard
+export default class BotCard
 {
-	constructor(events, wallet)
+	constructor(events, bot)
 	{
 		//	TODO: Two-way binding
 		//alert(JSON.stringify(wallet));
 		this.events = events;
-
-		let walletCardData =
+		alert(JSON.stringify(bot));
+		let botCardData =
 		{
-			id: "walletCard" + wallet.address,
-			title: wallet.nickname,
-			subTitle: wallet.address,
+			id: "botCard" + bot.id,
+			title: bot.id,
+			subTitle: bot.wallet.address,
 			body: "",
 
 			onClick: (card) => 
 			{
-				events.publish('walletSelected', wallet);
+				events.publish('botSelected', bot);
 				card.select();
 			}
 		};
-		this.card = new Card(walletCardData);
+		this.card = new Card(botCardData);
 
 
 		this.element = (this.card).element;

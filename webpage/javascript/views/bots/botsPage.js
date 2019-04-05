@@ -3,7 +3,7 @@
 import Events from '../../library/events.js';
 import Card from '../components/basic/card.js'; // or './module'
 import { table } from '../components/basic/table.js'; // or './module'
-import WalletCard from './components/walletCard.js'; // or './module'
+import BotCard from './components/botCard.js'; // or './module'
 import NewBotCard from './components/newBotCard.js'; // or './module'
 import AssetsCard from './components/assetsCard.js'; // or './module'
 import ExchangeCard from './components/exchangeCard.js'; // or './module'
@@ -110,7 +110,18 @@ export class BotsPage
 			console.log("No bots found");
 		}
 
+		for (var key in bots) 
+		{
+			let bot = bots[key];
+			let botCard = new BotCard(this.events, bot);
 
+			botCard.events.subscribe('botSelected', () => 
+			{
+				botCard.card.deselect();
+			});
+
+			this.bots.append(botCard.element);
+		}
 
 	}
 

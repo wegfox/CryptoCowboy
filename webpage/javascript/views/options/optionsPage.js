@@ -4,8 +4,10 @@ import { table } from '../components/basic/table.js'; // or './module'
 
 export class OptionsPage
 {
-	constructor()
+	constructor(socket)
 	{
+		this.socket = socket;
+
 		this.element = document.createElement("div");
 		this.element.id = "OptionsPage";
 		this.element.style.display = "none";
@@ -17,8 +19,28 @@ export class OptionsPage
 		this.table = table(wallets, manage, newWallet);
 
 		this.wallets = this.table.querySelector("#Wallets");
-		this.manage = this.table.querySelector("#Manage");
+		this.manage = this.table.querySelector("#Options2");
 		this.newWallet = this.table.querySelector("#NewWallet");
+
+
+		this.task = document.createElement("input");
+		this.target = document.createElement("input");
+		this.send = document.createElement("button");
+		this.send.innerHTML = "Send";
+		this.send.onclick = () => 
+		{
+			let command = {};
+			command.task = this.task.value;
+			command.target = this.target.value;
+			this.socket.emit("command", command);
+		};
+
+		this.manage.append(this.task);
+		this.manage.append(this.target);
+		this.manage.append(this.send);
+
+
+
 
 		this.element.append(this.table);
 	}

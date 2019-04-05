@@ -109,6 +109,9 @@ exports.loadWallets = () =>
 
 		let wallets = await readEntireTable("Wallets");
 
+		log.debug("wallets");
+
+		log.debug(wallets);
 		//	Scrub secret key for security
 		wallets.forEach(function (wallet)
 		{
@@ -127,6 +130,13 @@ exports.loadBots = () =>
 		log.debug("DB: Loading all bots from database");
 
 		let bots = await readEntireTable("Bots");
+		
+		bots.forEach((bot) => 
+		{
+			bot.wallet = JSON.parse(bot.wallet);
+			bot.baseCurrency = JSON.parse(bot.baseCurrency);
+			bot.pairCurrency = JSON.parse(bot.pairCurrency);
+		});
 
 		return bots;
 	});
@@ -198,7 +208,7 @@ function readEntireTable(table)
 				reject(err);
 				throw err;
 			}
-
+			//log.debug(rows);
 			//log.debug("Rows: " + JSON.stringify(rows));
 			resolve(rows);	//	array
 		});
@@ -232,6 +242,41 @@ exports.deleteWallet = function (address, callback)
 			callback();
 		});
 	});
+};
+
+exports.clearTable = function (table, callback)
+{
+	return execute(async () =>
+	{
+		log.verbose(`Clearing ${table}`);
+
+		var query = `DELETE FROM ${table}`;
+
+		database.run(query, [], function (err)
+		{
+			if (err)
+			{
+				return console.log(err.message);
+			}
+			// get the last insert id
+			//log.verbose(`Table has been cleared`);
+			//callback();
+		});
+
+		query = `VACUUM`;
+
+		database.run(query, [], function (err)
+		{
+			if (err)
+			{
+				return console.log(err.message);
+			}
+			// get the last insert id
+			log.verbose(`Table has been cleared`);
+			//callback();
+		});
+	});
+
 };
 
 

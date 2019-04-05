@@ -29,16 +29,16 @@ var ripple = require('./rippleModule');
 
 process.setMaxListeners(25);	//	TODO: Why was this going over?
 
-var Accounts = {};
+var Accounts = [];
 
 var Settings =
 {
 	version: packageJSON.version
 };
 
-var Wallets = {};
+var Wallets = [];
 
-var Bots = {};
+var Bots = [];
 
 //	*********************************************************
 //	Define Command line Options
@@ -225,6 +225,19 @@ async function initialize()
 	{
 		Object.assign(Wallets, wallets);
 		log.debug(`CC: Loaded wallets`);
+	}
+
+	var bots = await database.loadBots();
+	if (wallets == null)
+	{
+		log.warn("CC: No bots found.");
+	}
+	else
+	{
+		//To delete all object properties
+		//for (var member in myObject) delete myObject[member];
+		Object.assign(Bots, bots);
+		log.debug(`CC: Loaded bots`);
 	}
 
 	log.debug("Initiating connection to Ripple API");

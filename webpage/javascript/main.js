@@ -20,7 +20,7 @@ export default class App
 				Dashboard: new DashboardPage(socket),
 				Wallets: new WalletsPage(socket),
 				Bots: new BotsPage(socket),
-				Options: new OptionsPage(),
+				Options: new OptionsPage(socket),
 				Support: new SupportPage()
 			};
 

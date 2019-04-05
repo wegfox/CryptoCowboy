@@ -79,9 +79,9 @@ export default class NewBotCard
 			let bot = {};
 			bot.id = botID.value;
 
-			bot.wallet = this.selectWallet.Value;
-			bot.baseCurrency = this.baseCurrency.Value;
-			bot.pairCurrency = this.pairCurrency.Value;
+			bot.wallet = JSON.stringify(this.selectWallet.Value);
+			bot.baseCurrency = JSON.stringify(this.baseCurrency.Value);
+			bot.pairCurrency = JSON.stringify(this.pairCurrency.Value);
 
 			bot.fixedPoint = botFixedPoint.value;
 			bot.funding = botFunding.value;
@@ -92,7 +92,7 @@ export default class NewBotCard
 			bot.growthRate = botGrowthRate.value;
 			bot.decayRate = botDecayRate.value;
 
-			alert(JSON.stringify(bot));
+			//alert(JSON.stringify(bot));
 			this.socket.emit('addBot', bot);
 		};
 
