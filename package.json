@@ -1,0 +1,30 @@
+{
+  "name": "cryptocowboy",
+  "version": "2.0.0-alpha.4",
+  "description": "A live working sample can be found here: http://CryptoCowboy.tech/<br><br>\r Check out our Discord community: https://discord.gg/aQv2EUH\r This is a work in progress; Use at your own risk.<br><br>\r [This project currently has limited functionality and is not ready to use]\r <br>",
+  "main": "CryptoCowboy.js",
+  "dependencies": {
+    "command-line-args": "^5.1.1",
+    "express": "^4.16.4",
+    "ripple-lib": "^1.2.1",
+    "socket.io": "^2.2.0",
+    "sqlite3": "^4.0.6",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "development": "nodemon --inspect .\\CryptoCowboy.js --debug --port 3000",
+    "debug": "node .\\CryptoCowboy.js --debug",
+    "CryptoCowboy": "node .\\CryptoCowboy.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brietoe/CryptoCowboy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Brietoe/CryptoCowboy/issues"
+  },
+  "homepage": "https://github.com/Brietoe/CryptoCowboy#readme"
+}

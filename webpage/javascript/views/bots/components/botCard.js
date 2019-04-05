@@ -9,7 +9,7 @@ export default class BotCard
 		//	TODO: Two-way binding
 		//alert(JSON.stringify(wallet));
 		this.events = events;
-		alert(JSON.stringify(bot));
+		//alert(JSON.stringify(bot));
 		let botCardData =
 		{
 			id: "botCard" + bot.id,

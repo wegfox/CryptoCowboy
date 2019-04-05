@@ -10,7 +10,6 @@
 node_modules
 .eslintrc.json
 .vscode/launch.json
-*.json
 CryptoCowboy.code-workspace
 database/cryptocowboy.db
 *.db
