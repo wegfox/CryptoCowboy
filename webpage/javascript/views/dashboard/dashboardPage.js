@@ -5,6 +5,10 @@ import { table } from '../components/basic/table.js';
 import Binding from '../../library/binding.js';
 import WalletCard from '../wallets/components/walletCard.js';
 import DeployBot from './components/deployBot.js';
+import BotCard from '../bots/components/botCard.js'; // or './module'
+import Grid from '../components/basic/grid.js';
+
+
 export default class DashboardPage
 {
 	constructor(socket)
@@ -16,15 +20,13 @@ export default class DashboardPage
 		this.element.style.display = "none";
 
 		let summary = { title: "Summary", width: 3 };
-		let deploy = { title: "Deploy", width: 3 };
-		let monitor = { title: "Monitor", width: 3 };
+		let dashboard = { title: "Dashboard", width: 6 };
 		let history = { title: "History", width: 3 };
 
-		this.table = table(summary, deploy, monitor, history);
+		this.table = table(summary, dashboard, history);
 
 		this.summary = this.table.querySelector("#Summary");
-		this.deploy = this.table.querySelector("#Deploy");
-		this.monitor = this.table.querySelector("#Monitor");
+		this.dashboard = this.table.querySelector("#Dashboard");
 		this.history = this.table.querySelector("#History");
 
 		let logs = document.createElement("ul");
@@ -70,6 +72,41 @@ export default class DashboardPage
 		}
 	}
 
+	get Bots()
+	{
+		return this.bots;
+	}
+
+	set Bots(value)
+	{
+		let bots = value;
+
+		if(bots == null)
+		{
+			console.log("No bots found");
+		}
+
+		this.bots = bots;
+
+		for (var key in bots) 
+		{
+			let bot = bots[key];
+			let botCard = new BotCard(this.events, bot);
+
+			botCard.events.subscribe('botSelected', () => 
+			{
+				botCard.card.deselect();
+			});
+
+			this.dashboard.append(botCard.element);
+		}
+
+		let gridTest = new Grid("My Grid");
+		this.dashboard.append(gridTest.element);
+
+	
+	}
+
 	show()
 	{
 		this.element.style.display = "block";
@@ -82,11 +119,11 @@ export default class DashboardPage
 
 	onWalletSelected(wallet)
 	{
-		this.deploy.innerHTML = '';
+		this.dashboard.innerHTML = '';
 		this.deployBot = new DeployBot(wallet);
-		this.deploy.append(this.deployBot.element);
-		this.selectedWalletTitle = this.element.querySelector("#Deploy-Header");
-		this.selectedWalletTitle.innerHTML = wallet.nickname + "<br>" + wallet.address;
+		this.dashboard.append(this.deployBot.element);
+		//this.selectedWalletTitle = this.element.querySelector("#Deploy-Header");
+		//this.selectedWalletTitle.innerHTML = wallet.nickname + "<br>" + wallet.address;
 		this.socket.emit("getAssets", wallet);
 	}
 

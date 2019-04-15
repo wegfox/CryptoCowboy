@@ -308,6 +308,7 @@ export default class ExchangeCard
 
 	set Bid(bidObject)
 	{
+		
 		let bid = bidObject.basePerPair;
 		this.bidValue = bid;
 		//bid = 1.00 / bid;
@@ -325,6 +326,11 @@ export default class ExchangeCard
 		{
 			this.Bid = orderBook;
 		}
+	}
+
+	get OrderBook()
+	{
+		return this.orderBook;
 	}
 
 	set Assets(assets)

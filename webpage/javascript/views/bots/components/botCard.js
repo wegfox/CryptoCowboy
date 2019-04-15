@@ -6,6 +6,7 @@ export default class BotCard
 {
 	constructor(events, bot)
 	{
+		this.bot = bot;
 		//	TODO: Two-way binding
 		//alert(JSON.stringify(wallet));
 		this.events = events;

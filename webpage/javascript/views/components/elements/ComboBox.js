@@ -62,7 +62,7 @@ export default class ComboBox
 		{
 			this.value = this.options[this.index][this.label];
 		}
-		if (this.options.length > 0)
+		if (this.options != null && this.options.length > 0)
 		{
 			this.index = this.element.selectedIndex;
 			this.value = this.options[this.index][this.label];

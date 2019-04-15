@@ -173,7 +173,7 @@ function socketConnection()
 			});
 		});
 
-		socket.on('addBot', function (bot)
+		socket.on('updateBot', function (bot)
 		{
 			log.debug("Socket: 'addBot'");
 

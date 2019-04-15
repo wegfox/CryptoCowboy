@@ -5,7 +5,7 @@ import Card from '../components/basic/card.js'; // or './module'
 import { table } from '../components/basic/table.js'; // or './module'
 import BotCard from './components/botCard.js'; // or './module'
 import NewBotCard from './components/newBotCard.js'; // or './module'
-import AssetsCard from './components/assetsCard.js'; // or './module'
+import BotConfig from './botConfig.js'; // or './module'
 import ExchangeCard from './components/exchangeCard.js'; // or './module'
 import ManageWalletCard from './components/manageWalletCard.js'; // or './module'
 
@@ -51,6 +51,8 @@ export class BotsPage
 				{
 					card.events.publish('botSelected', null);
 					card.select();
+
+					
 				}
 			};
 
@@ -59,11 +61,14 @@ export class BotsPage
 			newBotCard.events.subscribe('botSelected', () => 
 			{
 				newBotCard.deselect();
+
+
+
 			});
 
 			this.bots.append(newBotCard.element);
 
-			this.bots.append(newBotCard.element);
+			//this.bots.append(newBotCard.element);
 
 		this.socket.emit("getBots", "");
 	}
@@ -71,7 +76,6 @@ export class BotsPage
 
 	async onBotSelected(bot)
 	{
-		
 		if (bot.id == null)
 		{
 			this.build.innerHTML = '';
@@ -81,9 +85,15 @@ export class BotsPage
 
 			this.newBotCard = newBotCard;
 		}
-		/*
 		else
 		{
+			this.build.innerHTML = '';
+			let newBotCard = new BotConfig(bot, this.socket);
+			this.build.append(newBotCard.element);
+			//this.selectedWalletTitle = this.element.querySelector("#Manage-Header");
+
+			this.newBotCard = newBotCard;
+			/*
 			this.manage.innerHTML = '';
 
 			this.selectedWalletTitle = this.element.querySelector("#Manage-Header");
@@ -99,8 +109,8 @@ export class BotsPage
 			this.manage.append(this.manageWalletCard.element);
 
 			await this.socket.emit("getAssets", wallet);
+			*/
 		}
-*/
 	}
 
 	set Bots(bots)

@@ -75,7 +75,7 @@ export default class App
 		socket.on('bots', (bots) =>
 		{
 			Bots = bots;
-
+			views.Dashboard.Bots = bots;
 			views.Bots.Bots = bots;
 		});
 
@@ -98,7 +98,6 @@ export default class App
 			}
 			else
 			{
-				//alert(orderBook);
 				this.views.Wallets.OrderBook = orderBook;
 			}
 			//views.Dashboard.Assets = assets;

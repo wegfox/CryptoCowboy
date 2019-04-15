@@ -81,7 +81,11 @@ export class WalletsPage
 
 	set OrderBook(orderBook)
 	{
-		this.exchangeCard.OrderBook = orderBook;
+		if(this.exchangeCard != null && this.exchangeCard.OrderBook != null)
+		{
+			this.exchangeCard.OrderBook = orderBook;
+		}
+		
 	}
 
 	set Wallets(wallets)

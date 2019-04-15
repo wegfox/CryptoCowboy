@@ -4,32 +4,60 @@ import Card from '../../components/basic/card.js'; // or './module'
 
 export default class Grid
 {
-	constructor(events, wallet)
+	constructor(title)
 	{
 		//	TODO: Two-way binding
 
-		let walletCard =
-		{
-			id: "walletCard" + wallet.address,
-			title: wallet.nickname,
-			subTitle: "Address: " + wallet.address,
-			body: "",
-			onClick: (card) => 
+		this.element = document.createElement("div");
+		this.rows = [];
+		this.rowIndex = 0;
+
+
+			this.element.style.flexFlow = "row wrap";
 			{
-				card.select();
-				//events.publish('walletSelected', wallet);
+				let header = document.createElement("span");
+				//header.style.flexFlow = "column";
+				header.style.display = "flex";
+				header.style.flexDirection = "row";
+				this.element.append(header);
+				
+					this.titleElement = document.createElement("h6");
+					//title.className = "card-title m-0";
+					this.titleElement.innerHTML = title;
+					this.titleElement.style.flex = 1;
+					header.append(this.titleElement);
+
+					/*
+					let cp = document.createElement("h6");
+					cp.innerHTML = asset.counterparty;
+					cp.style.flex = 1;
+					header.append(cp);
+
+					let balance = document.createElement("h6");
+					balance.innerHTML = asset.balance;
+					balance.style.flex = 1;
+					header.append(balance);
+					*/
+				
+
+				//let separator = document.createElement("hr");
+				//element.append(separator);
 			}
-		};
-
-		this.element = (new Card(walletCard)).element;
 	}
 
-	show()
+	push(element, weight)
 	{
-		this.element.style.display = "block";
+		if(typeof(element))
+
+		this.element[this.rowIndex].append(element);
 	}
-	hide()
+
+	insertRow()
 	{
-		this.element.style.display = "none";
+		let row = document.createElement("div");
+
+		row.style.flexFlow = "row wrap";
+
+		this.element.append(row);
 	}
 }

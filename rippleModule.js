@@ -445,6 +445,28 @@ exports.exchange = async (orderData) =>
 };
 
 
+exports.trustLine = async () =>
+{
+	const address = 'rH9FrUyVgW5Hpy8cPeBgE3pVkNpTKVySVF';
+	const trustline = {
+	  "currency": "USD",
+	  "counterparty": "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq",
+	  "limit": "100000",
+	  "ripplingDisabled": true,
+	  "frozen": false,
+	  "memos": [
+		{
+		  "data": "Emma",
+		}
+	  ]
+	};
+	return api.prepareTrustline(address, trustline).then(prepared =>
+	  {
+
+	  });
+}
+
+
 
 
 // function createBuyOrder(shares, cost)
